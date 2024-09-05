@@ -148,12 +148,6 @@ rm(apoeres)
 #############################################################################################################
 #############################################################################################################
 
-#switch so first dates close to saa dates
-#make everything after  amyloid positive - positive
-#make everythin before amyloid negative - negative
-#saa negative - take MRI image just before last saa- observation (ignore 2 year window)
-#for saa positive - take MRI image just after first saa+ observation (ignore 2 year window)
-
 #this file is the output of the MRI_CSV_processing steps plys apoe-, education-, and gender-corrected
 mri_roi_cs <- read.csv("~/data/age_apoe_education_gender_SV_CV_corrected_mri.csv") %>%
   dplyr::filter(RID %in% stable_rids) %>%
