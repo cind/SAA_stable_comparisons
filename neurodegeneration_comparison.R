@@ -155,7 +155,7 @@ rm(apoeres)
 #for saa positive - take MRI image just after first saa+ observation (ignore 2 year window)
 
 #this file is the output of the MRI_CSV_processing steps plys apoe-, education-, and gender-corrected
-mri_roi_cs <- read.csv("C:\\Work Folder\\paper data longitudinal phases\\age_apoe_education_gender_SV_CV_corrected_mri.csv") %>% # icv_adj_harm_age_adg_mri_data.csv") %>%
+mri_roi_cs <- read.csv("~/data/age_apoe_education_gender_SV_CV_corrected_mri.csv") %>%
   dplyr::filter(RID %in% stable_rids) %>%
   dplyr::mutate(EXAMDATE = as.Date(EXAMDATE))
 
