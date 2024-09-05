@@ -51,50 +51,21 @@ stable_rids <- unique(stables$RID)
 ####################################
 # Labelled Steps:
 ####################################
-# Step 1: Adding in Amyloid positivity (filling everything after 1st amyloid positive - positive, filling everything before last amyloid negative - negative)
+# Step 1: Getting amyloid right before EXAMDATE (SAA-) and right after EXAMDATE (SAA+)
 ####################################
-# Step 2: getting MRI right before EXAMDATE (SAA-) and right after EXAMDATE (SAA+)
+# Step 2: Adding nearest diagnoses
 ####################################
-# Step 3: adding nearest diagnoses
+# Step 3: Getting demographic information
 ####################################
-# Step 4: getting demographic information
+# Step 4: Getting p-values
 ####################################
-# Step 5: getting p-values
+# Step 5: Organizing dictionary and variable names
 ####################################
-# Step 6: ASEG - organizing dictionary and variable names
+# Step 6: Determining which variables to plot by significance
 ####################################
-# Step 7: ASEG - determining which variables to plot by significance
+# Step 7: Plotting
 ####################################
-# Step 8: APARC - organizing dictionary and variable names
-####################################
-# Step 9: APARC - determining which variables to plot by significance
-####################################
-# Step 10: Plotting
-####################################
-# Step 11: p-value corrections
-####################################
-
-
-####################################
-# Labelled Steps:
-####################################
-# Step 1: Adding in Amyloid positivity (filling everything after 1st amyloid positive - positive, filling everything before last amyloid negative - negative)
-####################################
-# Step 2: getting amyloid right before EXAMDATE (SAA-) and right after EXAMDATE (SAA+)
-####################################
-# Step 3: adding nearest diagnoses
-####################################
-# Step 4: getting demographic information
-####################################
-# Step 5: getting p-values
-####################################
-# Step 6: organizing dictionary and variable names
-####################################
-# Step 7: determining which variables to plot by significance
-####################################
-# Step 8: plotting
-####################################
-# Step 9: p_value adjustment
+# Step 8: p_value corrections
 ####################################
 
 #############################################################################################################
@@ -151,41 +122,6 @@ dem <- dem %>%
 
 rm(apoeres)
 
-
-
-
-
-
-
-
-
-
-
-
-####################################
-# Labelled Steps:
-####################################
-# Step 1: Adding in Amyloid positivity (filling everything after 1st amyloid positive - positive, filling everything before last amyloid negative - negative)
-####################################
-# Step 2: getting amyloid right before EXAMDATE (SAA-) and right after EXAMDATE (SAA+)
-####################################
-# Step 3: adding nearest diagnoses
-####################################
-# Step 4: getting demographic information
-####################################
-# Step 5: getting p-values
-####################################
-# Step 6: organizing dictionary and variable names
-####################################
-# Step 7: determining which variables to plot by significance
-####################################
-# Step 8: plotting
-####################################
-# Step 9: p_value adjustment
-####################################
-
-
-
 #############################################################################################################
 #############################################################################################################
 #############################################################################################################
@@ -195,7 +131,7 @@ rm(apoeres)
 #############################################################################################################
 
 #regional pet values for amyloid
-amyloid_roi_cs <- read.csv("C:\\Work Folder\\paper data longitudinal phases\\UCBERKELEY_AMY_6MM_31Jul2024.csv") %>% 
+amyloid_roi_cs <- read.csv("~/data/UCBERKELEY_AMY_6MM_31Jul2024.csv") %>% 
   dplyr::filter(qc_flag == 2 | qc_flag == 1,
                 RID %in% stable_rids) %>%
   dplyr::mutate(SCANDATE = as.Date(SCANDATE))
@@ -204,7 +140,7 @@ amyloid_roi_cs <- read.csv("C:\\Work Folder\\paper data longitudinal phases\\UCB
 amyloid_roi_cs <- merge(amyloid_roi_cs, stables, by = "RID")
 
 ####################################
-# Step 2: getting SCAN right before EXAMDATE (SAA-) and right after EXAMDATE (SAA+)
+# Step 1: getting SCAN right before EXAMDATE (SAA-) and right after EXAMDATE (SAA+)
 ####################################
 
 amyloid_roi_cs_saa_neg <- amyloid_roi_cs %>%
@@ -258,7 +194,7 @@ amyloid_roi_cs_saa_pos <- amyloid_roi_cs_saa_pos %>%
 amyloid_roi_cs <- rbind(amyloid_roi_cs_saa_neg, amyloid_roi_cs_saa_pos) #604 RID's
 
 ####################################
-# Step 3: adding nearest diagnoses
+# Step 2: adding nearest diagnoses
 ####################################
 #adding diagnosis in
 amyloid_roi_cs <- amyloid_roi_cs %>%
@@ -282,7 +218,7 @@ amyloid_roi_cs <- amyloid_roi_cs %>%
   dplyr::ungroup()
 
 ####################################
-# Step 4: getting demographic information
+# Step 3: getting demographic information
 ####################################
 #first getting rid of rows that have no information on features
 amyloid_roi_cs <- amyloid_roi_cs[which(rowMeans(!is.na(amyloid_roi_cs)) > 0.8), ]
@@ -305,14 +241,10 @@ sd(amyloid_roi_cs_saa_pos$PTEDUCAT)
 mean(amyloid_roi_cs_saa_neg$PTEDUCAT)
 sd(amyloid_roi_cs_saa_neg$PTEDUCAT)
 
-
-
-
 rm(amyloid_roi_cs_saa_neg, amyloid_roi_cs_saa_pos)
 
-
 ####################################
-# Step 5: getting p-values
+# Step 4: getting p-values
 ####################################
 amyloid_roi_cs <- amyloid_roi_cs %>%
   dplyr::select(-VENTRICLE_5TH_SUVR, -WHOLECEREBELLUM_SUVR)
@@ -451,7 +383,7 @@ p_values_data_ad$Effect_Size <- amyloid_effect_sizes_ad
 p_values_data_ad$n <- amyloid_n_ad
 
 ####################################
-# Step 6: organizing dictionary and variable names
+# Step 5: organizing dictionary and variable names
 ####################################
 
 #getting the dictionary so that the ROI names are listed
@@ -475,20 +407,6 @@ p_values_data_test <- merge(p_values_data, dict, by.x = "ROI", by.y = "FLDNAME",
                                   ROI == "RIGHT_PALLIDUM_SUVR" ~ "Right-Pallidum",
                                   ROI == "LEFT_CAUDATE_SUVR" ~ "Left-Caudate",
                                   ROI == "RIGHT_CAUDATE_SUVR" ~ "Right-Caudate",
-                                  # ROI == "LEFT_VENTRALDC_SUVR" ~ "Left-VentralDC",
-                                  # ROI == "RIGHT_VENTRALDC_SUVR" ~ "Right-VentralDC",
-                                  # ROI == "VENTRICLE_3RD_SUVR" ~ "x3rd-ventricle",
-                                  # ROI == "VENTRICLE_4TH_SUVR" ~ "x4th-ventricle",
-                                  # ROI == "BRAINSTEM_SUVR" ~ "Brain-Stem",
-                                  # ROI == "CC_ANTERIOR_SUVR" ~ "CC_Anterior",
-                                  # ROI == "CC_CENTRAL_SUVR" ~ "CC_Central",
-                                  # ROI == "CC_MID_ANTERIOR_SUVR" ~ "CC_Mid_Anterior",
-                                  # ROI == "CC_MID_POSTERIOR_SUVR" ~ "CC_Mid_Posterior",
-                                  # ROI == "CC_POSTERIOR_SUVR" ~ "CC_Posterior",
-                                  # ROI == "LEFT_CEREBELLUM_CORTEX_SUVR" ~ "Left-Cerebellum-Cortex",
-                                  # ROI == "RIGHT_CEREBELLUM_CORTEX_SUVR" ~ "Right-Cerebellum-Cortex",
-                                  # ROI == "LEFT_CEREBELLUM_WHITE_MATTER_SUVR" ~ "Left-Cerebellum-White-Matter",
-                                  # ROI == "RIGHT_CEREBELLUM_WHITE_MATTER_SUVR" ~ "Right-Cerebellum-White-Matter",
                                   ROI == "LH_BANKSSTS_SUVR" ~ "lh_bankssts",
                                   ROI == "LH_CAUDALMIDDLEFRONTAL_SUVR" ~ "lh_caudalmiddlefrontal",
                                   ROI == "LH_FUSIFORM_SUVR" ~ "lh_fusiform",
@@ -511,7 +429,6 @@ p_values_data_test <- merge(p_values_data, dict, by.x = "ROI", by.y = "FLDNAME",
                                   ROI == "LH_TRANSVERSETEMPORAL_SUVR" ~ "lh_transversetemporal",
                                   ROI == "LH_INSULA_SUVR" ~ "lh_insula",
                                   ROI == "LH_CAUDALANTERIORCINGULATE_SUVR" ~ "lh_caudalanteriorcingulate",
-                                   # ~ "lh_corpuscallosum",
                                   ROI == "LH_CUNEUS_SUVR" ~ "lh_cuneus",
                                   ROI == "LH_ENTORHINAL_SUVR" ~ "lh_entorhinal",
                                   ROI == "RH_FUSIFORM_SUVR" ~ "rh_fusiform",
@@ -583,7 +500,6 @@ p_amyloid_aseg <- merge(p_values_data_test, aseg_data, by.x = "label_aseg", by.y
 p_amyloid_aparc <- merge(p_values_data_test, aparc_data, by.x = "label_aseg", by.y = "label", all.y = TRUE) %>%
   dplyr::filter(!(is.na(region))) %>%
   dplyr::rename(label = label_aseg)
-
 
 # CN
 p_values_data_test_cn <- merge(p_values_data_cn, dict, by.x = "ROI", by.y = "FLDNAME", all.x = TRUE) %>%
@@ -914,7 +830,7 @@ p_amyloid_aparc_ad <- merge(p_values_data_test_ad, aparc_data, by.x = "label_ase
   dplyr::rename(label = label_aseg)
 
 ####################################
-# Step 7: Determining which variables to plot by significance
+# Step 6: Determining which variables to plot by significance
 ####################################
 #ASEG rois
 p_amyloid_aseg <- p_amyloid_aseg %>%
@@ -952,13 +868,12 @@ p_amyloid_aparc_ad <- p_amyloid_aparc_ad %>%
                                   amyloid_p_values_ad < .05 ~ "sig")) %>%
   dplyr::filter(!(is.na(p_sig)))
 
+####################################
+# Step 7: plotting
+####################################
 
-####################################
-# Step 8: plotting
-####################################
 #aseg
 b <- c(-.3, 0, .3) # b <- c(-.4, 0, .4)
-
 
 aseg_full <- ggplot(p_amyloid_aseg %>% dplyr::filter(p_sig == "sig")) +
   geom_brain( atlas=aseg, mapping=aes(fill=Effect_Size)) +
@@ -1060,7 +975,7 @@ aparc_full + aparc_cn + aparc_mci + aparc_ad +
   plot_layout(ncol = 1, guides = "collect")
 
 ####################################
-# Step 9: p_value adjustment
+# Step 8: p_value adjustment
 ####################################
 
 p_amyloid_all <- rbind(p_amyloid_aseg %>% dplyr::select(ROI, atlas, hemi, side, region, amyloid_p_values, Effect_Size, p_sig), p_amyloid_aparc %>% dplyr::select(ROI, atlas, hemi, side, region, amyloid_p_values, Effect_Size, p_sig)) %>%
