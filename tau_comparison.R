@@ -51,7 +51,7 @@ stable_rids <- unique(stables$RID)
 ####################################
 # Labelled Steps:
 ####################################
-# Step 1: Adding in tau positivity (filling everything after 1st tau positive - positive, filling everything before last tau negative - negative)
+# Step 1: Adding in amyloid positivity (filling everything after 1st amyloid positive - positive, filling everything before last amyloid negative - negative)
 ####################################
 # Step 2: Getting tau right before EXAMDATE (SAA-) and right after EXAMDATE (SAA+)
 ####################################
@@ -154,10 +154,10 @@ tau_roi_cs <- read.csv("~/data/UCBERKELEY_TAU_6MM_17Jun2024.csv") %>%
 tau_roi_cs <- merge(tau_roi_cs, stables, by = "RID")
 
 ####################################
-# Step 1: Adding in tau positivity (filling everything after 1st tau positive - positive, filling everything before last tau negative - negative)
+# Step 1: Adding in amyloid positivity (filling everything after 1st amyloid positive - positive, filling everything before last amyloid negative - negative)
 ####################################
 
-#adding in tau pet
+#adding in amyloid pet
 #getting tau negative cases with last tau negative dates
 last_a_negative_date_pet <- amyloid_pet %>%
   dplyr::group_by(RID) %>%
@@ -172,7 +172,7 @@ last_a_negative_date_pet <- last_a_negative_date_pet %>%
   dplyr::mutate(AmyNeg_Centiloid = Centiloid) %>%
   dplyr::select(-Centiloid, -EXAMDATE_pet, - AmyNeg_Centiloid)
 
-# getting tau positive cases with first tau positive dates
+# getting amyloid positive cases with first amyloid positive dates
 first_a_positive_date_pet <- amyloid_pet %>%
   dplyr::group_by(RID) %>%
   dplyr::filter(AmyloidPosPET == 1) %>%
@@ -185,7 +185,7 @@ first_a_positive_date_pet <- first_a_positive_date_pet %>%
   dplyr::mutate(AmyPos_Centiloid = Centiloid) %>%
   dplyr::select(-Centiloid, -EXAMDATE_pet, - AmyPos_Centiloid)
 
-#merging tau info back into dataset so that I can use the first and last tau status dates
+#merging amyloid info back into dataset so that I can use the first and last amyloid status dates
 tau_roi_cs <- merge(tau_roi_cs, last_a_negative_date_pet, by = "RID", all.x = TRUE)
 tau_roi_cs <- merge(tau_roi_cs, first_a_positive_date_pet, by = "RID", all.x = TRUE) %>%
   dplyr::mutate(last_saa_negative_date = as.Date(last_saa_negative_date),
